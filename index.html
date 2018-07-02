@@ -83,7 +83,6 @@
 				margin-bottom: 50px;
 				padding-left: 3px;
 			}
-			
 			.text-center {
 				text-align: center;
 			}
@@ -96,11 +95,10 @@
 				width: 100%;
 				height: 100%;
 				background: rgba(0,0,0,.4);
-				z-index: 0;
+				z-index: 10;
 			}
 			
 		</style>
-		<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
 		<script type="text/javascript">
 			setSize();
 			window.addEventListener("resize", setSize, false);
@@ -117,26 +115,26 @@
 	</head>
 
 	<body>
-		
-		<div class="cover"></div>
-		<div class="popup">
+		<div class="cover" id="cover"></div>
+		<div class="popup" id="popup">
 			<div class="popup-in">
 				<div class="popup-cont">
 					<h2 class="popup-tit">拍照规则提示</h2>
 					<p class="popup-text">供应链金融左前45度、铭牌照片、里程数第一车贷左前45度、铭牌照片、里程数第二车贷左前45度、铭牌照片、里程数</p>
 				</div>
 				<div class="text-center">
-					<input class="pop-btn" type="button" value="确定" />
+					<input id="pop-btn" class="pop-btn" type="button" value="确定" />
 				</div>
 			</div>
 		</div>
 		<script type="text/javascript">
-			$(function() {
-				$('.pop-btn').click(function() {
-					$('.popup').fadeOut();
-					$('.cover').fadeOut();
-				})
-			})
+            var cover = document.getElementById('cover');
+            var popup = document.getElementById('popup');
+            var popBtn = document.getElementById('pop-btn');
+            popBtn.onclick = function(){
+            	cover.style.display = "none";
+            	popup.style.display = "none";
+            }
 		</script>
 	</body>
 
