@@ -13,6 +13,7 @@
 			* {
 				padding: 0;
 				margin: 0;
+				-webkit-tap-highlight-color: transparent;
 			}
 			
 			input {
@@ -21,7 +22,6 @@
 				border: none;
 				background: none;
 				font-family: "Microsoft YaHei";
-				-webkit-tap-highlight-color: transparent;
 			}
 			/*弹框样式*/
 			
@@ -35,6 +35,7 @@
 				border-radius: 18px;
 				z-index: 99;
 			}
+			
 			.popup-cont {
 				padding: 20px 30px 50px;
 			}
@@ -49,9 +50,11 @@
 				color: #666;
 				margin-top: 20px;
 			}
+			
 			.popup-text li {
 				margin-bottom: 20px;
 			}
+			
 			.popup-text h4 {
 				color: #333;
 			}
@@ -64,6 +67,7 @@
 				color: #333;
 				text-align: center;
 			}
+			
 			.cover {
 				position: absolute;
 				top: 0;
@@ -72,11 +76,10 @@
 				right: 0;
 				width: 100%;
 				height: 100%;
-				background: rgba(0,0,0,.4);
+				background: rgba(0, 0, 0, .4);
 				z-index: 10;
 				cursor: pointer;
 			}
-			
 		</style>
 		<script type="text/javascript">
 			setSize();
@@ -112,20 +115,75 @@
 				</div>
 			</div>
 		</div>
+		
 		<script type="text/javascript">
-            var cover = document.getElementById('cover');
-            var popup = document.getElementById('popup');
-            document.addEventListener("click",function(){
-            	popup.style.display = "none";
-            	cover.style.display = "none";
-            	android.post("哈哈哈哈");
-            });
-            popup.addEventListener("click",function(event){
-            	event=event||window.event;
-			    event.stopPropagation();
-            });
-            
-            
+			var cover = document.getElementById('cover');
+			var popup = document.getElementById('popup');
+			var ua = navigator.userAgent.toLowerCase();
+
+			if(/iphone|ipad|ipod/.test(ua)) {
+				
+				setupWebViewJavascriptBridge(function(bridge) {
+					document.addEventListener("click", function() {
+						fadeOut(popup, 2000);
+						fadeOut(cover, 2000);
+						bridge.callHandler('ObjcCallback', {
+							'foo': 'bar'
+						}, function(response) {})
+					});
+					popup.addEventListener("click", function(event) {
+						event = event || window.event;
+						event.stopPropagation();
+					});
+				})
+			} else if(/android/.test(ua)) {
+				document.addEventListener("click", function() {
+					fadeOut(popup, 2000);
+					fadeOut(cover, 2000);
+					android.post("哈哈哈哈");
+				});
+				popup.addEventListener("click", function(event) {
+					event = event || window.event;
+					event.stopPropagation();
+				});
+
+			}
+			//淡出效果
+			function fadeOut(el, time) {
+				if(el.style.opacity === "") {
+					el.style.opacity = 1;
+				}
+				if(el.style.display === "" || el.style.display === 'none') {
+					el.style.display = 'block';
+				}
+
+				var t = setInterval(function() {
+					if(el.style.opacity > 0) {
+						el.style.opacity = parseFloat(el.style.opacity) - 0.1;
+					} else {
+						clearInterval(t);
+						el.style.display = 'none'
+					}
+				}, time / 100);
+
+			}
+			//IOS方法
+			function setupWebViewJavascriptBridge(callback) {
+				if(window.WebViewJavascriptBridge) {
+					return callback(WebViewJavascriptBridge);
+				}
+				if(window.WVJBCallbacks) {
+					return window.WVJBCallbacks.push(callback);
+				}
+				window.WVJBCallbacks = [callback];
+				var WVJBIframe = document.createElement('iframe');
+				WVJBIframe.style.display = 'none';
+				WVJBIframe.src = 'https://__bridge_loaded__';
+				document.documentElement.appendChild(WVJBIframe);
+				setTimeout(function() {
+					document.documentElement.removeChild(WVJBIframe)
+				}, 0)
+			}
 		</script>
 	</body>
 
